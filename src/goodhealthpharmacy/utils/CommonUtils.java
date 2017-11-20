@@ -17,4 +17,12 @@ public class CommonUtils {
     {
             JOptionPane.showMessageDialog(null, "Field can not be empty.");
     }
+    public static void showNotSelectedWarningDialog()
+    {
+            JOptionPane.showMessageDialog(null, "Please select an option.");
+    }
+    public static void showTooBigTextWarningDialog()
+    {
+            JOptionPane.showMessageDialog(null, "Input is too big.");
+    }
 }

@@ -7,9 +7,13 @@ package goodhealthpharmacy;
 
 import goodhealthpharmacy.database.DataHelper;
 import goodhealthpharmacy.model.Doctor;
-import goodhealthpharmacy.model.Patient;
+import goodhealthpharmacy.model.Contract;
 import goodhealthpharmacy.utils.CommonUtils;
 import goodhealthpharmacy.utils.Constants;
+import java.awt.Dimension;
+import java.awt.JobAttributes;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -34,18 +38,24 @@ import javafx.scene.control.TablePosition;
 import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 /**
  *
  * @author Tanzeer
  */
-public class FXMLPatientManagementController implements Initializable {
+public class FXMLContractManagementController implements Initializable {
 
     @FXML
     TextField txtSsn;
@@ -59,7 +69,7 @@ public class FXMLPatientManagementController implements Initializable {
     Button btnAdd;
     
     @FXML
-    Button btnPatient;
+    Button btnContract;
     
     @FXML
     Button btnDocManage;
@@ -72,25 +82,19 @@ public class FXMLPatientManagementController implements Initializable {
     
     @FXML
     Button btnDrug;
-    
-    @FXML
-    Button btnContract;
-    
-    @FXML
-    Button btnPrescription;
 
 
     @FXML
-    TableView tableDoctor;
+    TableView tableContract;
 
-    private  ObservableList<Patient> data;
+    private  ObservableList<Contract> data;
 
     @FXML
     private void handleButtonAction(ActionEvent event) {
        System.out.println(event.getSource()+"  patient clicked");
         Stage stage;
         Parent root;
-        stage = (Stage) btnPatient.getScene().getWindow();
+        stage = (Stage) btnContract.getScene().getWindow();
         //load up OTHER FXML document
         try {
              root = FXMLLoader.load(getClass().getResource("FXMLDoctorManagement.fxml"));
@@ -108,7 +112,7 @@ public class FXMLPatientManagementController implements Initializable {
      System.out.println(event.getSource()+"  doctor clicked");
         Stage stage;
         Parent root;
-        stage = (Stage) btnPatient.getScene().getWindow();
+        stage = (Stage) btnContract.getScene().getWindow();
         //load up OTHER FXML document
         try {
              root = FXMLLoader.load(getClass().getResource("FXMLDoctorManagement.fxml"));
@@ -126,7 +130,7 @@ public class FXMLPatientManagementController implements Initializable {
      System.out.println(event.getSource()+"  doctor clicked");
         Stage stage;
         Parent root;
-        stage = (Stage) btnPatient.getScene().getWindow();
+        stage = (Stage) btnContract.getScene().getWindow();
         //load up OTHER FXML document
         try {
              root = FXMLLoader.load(getClass().getResource("FXMLPharmacyManagement.fxml"));
@@ -175,42 +179,6 @@ public class FXMLPatientManagementController implements Initializable {
             e.printStackTrace();
         }
     }
-      @FXML
-    private void onContractManage(ActionEvent event) {
-     System.out.println(event.getSource()+"  contract clicked");
-        Stage stage;
-        Parent root;
-        stage = (Stage) btnCompany.getScene().getWindow();
-        //load up OTHER FXML document
-        try {
-             root = FXMLLoader.load(getClass().getResource("FXMLContractManagement.fxml"));
-             Scene scene = new Scene(root,Constants.WINDOW_WIDTH,Constants.WINDOW_HEIGHT);
-
-            stage.setTitle("Contract Management");
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-      @FXML
-    private void onPrescriptionManage(ActionEvent event) {
-     System.out.println(event.getSource()+"  contract clicked");
-        Stage stage;
-        Parent root;
-        stage = (Stage) btnCompany.getScene().getWindow();
-        //load up OTHER FXML document
-        try {
-             root = FXMLLoader.load(getClass().getResource("FXMLPrescriptionManagement.fxml"));
-             Scene scene = new Scene(root,Constants.WINDOW_WIDTH,Constants.WINDOW_HEIGHT);
-
-            stage.setTitle("Prescription Management");
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
     @FXML
     private void handleAddButton(ActionEvent event) {
         System.out.println(event.getSource() + "  add clicked");
@@ -229,7 +197,7 @@ public class FXMLPatientManagementController implements Initializable {
                 txtName.setText("");
                 txtSpeciality.setText("");
                 txtExp.setText("");
-                initPatientTable();
+                initContractTable();
            }
            else
            {
@@ -238,134 +206,159 @@ public class FXMLPatientManagementController implements Initializable {
            }
         }
     }
+    @FXML
+    private void onContractEditClicked(Contract contract) {
+        System.out.println( "contract edit clicked");
+         Stage stage;
+        Parent root;
+        stage = (Stage) btnCompany.getScene().getWindow();
+        //load up OTHER FXML document
+        try {
+             Constants.CURRENT_SELECTION = Constants.SELECTION_FLAG_EDIT;
+             Constants.CURRENT_SELECTED_CONTRACT = contract;
+             root = FXMLLoader.load(getClass().getResource("FXMLAddEditContractManagement.fxml"));
+             Scene scene = new Scene(root,Constants.WINDOW_WIDTH,Constants.WINDOW_HEIGHT);
+
+            stage.setTitle("Contract Management");
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+       
+    }
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         
-        initPatientTable();
+        initContractTable();
     }
     private void loadData()
     {
-        ArrayList<Patient> patientList= DataHelper.getPatientList();
+        ArrayList<Contract> patientList= DataHelper.getContractList();
         data= FXCollections.observableArrayList(patientList);
     }
 
-    private void initPatientTable() {
+    private void initContractTable() {
         loadData();
         int column_maxWidth = Constants.TABLE_WIDTH / 6;
-        tableDoctor.setEditable(true);
-        TableColumn ssn = new TableColumn("SSN");
-        TableColumn name = new TableColumn("Name");
-        TableColumn age = new TableColumn("Age");
-        TableColumn address = new TableColumn("Address");
-        TableColumn primary_phy = new TableColumn("Primary Physician");
+        tableContract.setEditable(true);
+        TableColumn pharm_id = new TableColumn("Pharmacy_id");
+        TableColumn start_date = new TableColumn("Start Date");
+        TableColumn end_date = new TableColumn("End Date");
+        TableColumn text = new TableColumn("Text");
+        TableColumn supervisor = new TableColumn("Supervisor");
+        TableColumn pharm_co_name = new TableColumn("Company");
+
 
         TableColumn remove = new TableColumn("Remove");
 
-        ssn.setPrefWidth(column_maxWidth);
-        ssn.setCellValueFactory(
-                new PropertyValueFactory<Doctor, String>("ssn"));
+        pharm_id.setPrefWidth(column_maxWidth);
+        pharm_id.setCellValueFactory(
+                new PropertyValueFactory<Doctor, String>("pharm_id"));
         // firstNameCol.setCellFactory(TextFieldTableCell.forTableColumn());
-       ssn.setCellFactory(TextFieldTableCell.forTableColumn());
-       ssn.setOnEditCommit(
-            new EventHandler<CellEditEvent<Patient, String>>() {
+       pharm_id.setCellFactory(TextFieldTableCell.forTableColumn());
+       pharm_id.setOnEditCommit(
+            new EventHandler<CellEditEvent<Contract, String>>() {
                 @Override
-                public void handle(CellEditEvent<Patient, String> t) {
+                public void handle(CellEditEvent<Contract, String> t) {
                     System.out.println(t.getNewValue()+"  "+ t.getOldValue());
                     if( t.getNewValue().length() == 0)
                     {
-                        initPatientTable();
+                        initContractTable();
                       //  CommonUtils.showWarningDialog();
                   
                     }
                     else
                     {
-                    ((Patient) t.getTableView().getItems().get(
+                    ((Contract) t.getTableView().getItems().get(
                             t.getTablePosition().getRow())
-                            ).setSsn(t.getNewValue());
+                            ).setPharm_id(t.getNewValue());
                     }
                 }
             }
         );
 
-        name.setPrefWidth(column_maxWidth);
-        name.setCellValueFactory(
-                new PropertyValueFactory<Patient, String>("name"));
-        name.setCellFactory(TextFieldTableCell.forTableColumn());
-        name.setOnEditCommit(
-            new EventHandler<CellEditEvent<Patient, String>>() {
+        start_date.setPrefWidth(column_maxWidth);
+        start_date.setCellValueFactory(
+                new PropertyValueFactory<Contract, String>("start_date"));
+        start_date.setCellFactory(TextFieldTableCell.forTableColumn());
+        start_date.setOnEditCommit(
+            new EventHandler<CellEditEvent<Contract, String>>() {
                 @Override
-                public void handle(CellEditEvent<Patient, String> t) {
-                    ((Patient) t.getTableView().getItems().get(
+                public void handle(CellEditEvent<Contract, String> t) {
+                    ((Contract) t.getTableView().getItems().get(
                             t.getTablePosition().getRow())
-                            ).setName(t.getNewValue());
+                            ).setStart_date(t.getNewValue());
                 }
             }
         );
 
-        age.setPrefWidth(column_maxWidth);
-        age.setCellValueFactory(
-                new PropertyValueFactory<Patient, String>("age"));
-        age.setCellFactory(TextFieldTableCell.forTableColumn());
-        age.setOnEditCommit(
-            new EventHandler<CellEditEvent<Patient, String>>() {
+        end_date.setPrefWidth(column_maxWidth);
+        end_date.setCellValueFactory(
+                new PropertyValueFactory<Contract, String>("end_date"));
+        end_date.setCellFactory(TextFieldTableCell.forTableColumn());
+        end_date.setOnEditCommit(
+            new EventHandler<CellEditEvent<Contract, String>>() {
                 @Override
-                public void handle(CellEditEvent<Patient, String> t) {
-                    ((Patient) t.getTableView().getItems().get(
+                public void handle(CellEditEvent<Contract, String> t) {
+                    ((Contract) t.getTableView().getItems().get(
                             t.getTablePosition().getRow())
-                            ).setAge(t.getNewValue());
+                            ).setEnd_date(t.getNewValue());
                 }
             }
         );
-        address.setCellValueFactory(
-                new PropertyValueFactory<Patient, Integer>("address"));
-        address.setPrefWidth(column_maxWidth);
-        address.setCellFactory(TextFieldTableCell.forTableColumn());
-        address.setOnEditCommit(
-            new EventHandler<CellEditEvent<Patient, String>>() {
+        supervisor.setCellValueFactory(
+                new PropertyValueFactory<Contract, Integer>("supervisor"));
+        supervisor.setPrefWidth(column_maxWidth);
+        supervisor.setCellFactory(TextFieldTableCell.forTableColumn());
+        supervisor.setOnEditCommit(
+            new EventHandler<CellEditEvent<Contract, String>>() {
                 @Override
-                public void handle(CellEditEvent<Patient, String> t) {
-                    ((Patient) t.getTableView().getItems().get(
+                public void handle(CellEditEvent<Contract, String> t) {
+                    ((Contract) t.getTableView().getItems().get(
                             t.getTablePosition().getRow())
-                            ).setAddress(t.getNewValue());
+                            ).setSupervisor(t.getNewValue());
                 }
             }
         );
-        primary_phy.setCellValueFactory(
-                new PropertyValueFactory<Patient, Integer>("pri_phy"));
-        primary_phy.setPrefWidth(column_maxWidth);
-        primary_phy.setCellFactory(TextFieldTableCell.forTableColumn());
-        primary_phy.setOnEditCommit(
-            new EventHandler<CellEditEvent<Patient, String>>() {
+        pharm_co_name.setCellValueFactory(
+                new PropertyValueFactory<Contract, Integer>("pharm_co_name"));
+        pharm_co_name.setPrefWidth(column_maxWidth);
+        pharm_co_name.setCellFactory(TextFieldTableCell.forTableColumn());
+        pharm_co_name.setOnEditCommit(
+            new EventHandler<CellEditEvent<Contract, String>>() {
                 @Override
-                public void handle(CellEditEvent<Patient, String> t) {
-                    ((Patient) t.getTableView().getItems().get(
+                public void handle(CellEditEvent<Contract, String> t) {
+                    ((Contract) t.getTableView().getItems().get(
                             t.getTablePosition().getRow())
-                            ).setPri_phy(t.getNewValue());
+                            ).setPharm_co_name(t.getNewValue());
                 }
             }
         );
         
         
-        remove.setCellValueFactory(new PropertyValueFactory<Patient, String>("remove"));
+        remove.setCellValueFactory(new PropertyValueFactory<Contract, String>("remove"));
         remove.setPrefWidth(column_maxWidth);
-        tableDoctor.setItems(data);
+        text.setCellValueFactory(new PropertyValueFactory<Contract, String>("contract"));
+        text.setPrefWidth(column_maxWidth);
+        tableContract.setItems(data);
 
-        tableDoctor.getColumns().addAll(ssn, name, age, address, primary_phy,remove);
+        tableContract.getColumns().addAll(pharm_id,start_date,end_date,supervisor,pharm_co_name,text,remove);
 
-        tableDoctor.getSelectionModel().setCellSelectionEnabled(true);
-        ObservableList selectedCells = tableDoctor.getSelectionModel().getSelectedCells();
+        tableContract.getSelectionModel().setCellSelectionEnabled(true);
+        ObservableList selectedCells = tableContract.getSelectionModel().getSelectedCells();
 
         selectedCells.addListener(new ListChangeListener() {
             @Override
             public void onChanged(Change c) {
                 TablePosition tablePosition = (TablePosition) selectedCells.get(0);
                 Object val = tablePosition.getTableColumn().getCellData(tablePosition.getRow());
-                int i = tableDoctor.getSelectionModel().getSelectedIndex();
-                // System.out.println("Selected Value" + val + "ssn "+ tableDoctor.getSelectionModel().getSelectedIndex());
+                int i = tableContract.getSelectionModel().getSelectedIndex();
+                 System.out.println("Selected Value" + val );
                 if (val.toString().equals("Remove")) {
-                    String s = ((Patient) tableDoctor.getItems().get(i)).getSsn();
-                    System.out.println(s);
+                 //  String s = ((Contract) tableContract.getItems().get(i)).getSsn();
+                   // System.out.println(s);
                     int dialogButton = JOptionPane.YES_NO_OPTION;
                     int dialog_result = JOptionPane.showConfirmDialog(null, "Are you sure?");
                     if (dialog_result == 0) {
@@ -374,7 +367,11 @@ public class FXMLPatientManagementController implements Initializable {
                         System.out.println("No Option");
                     }
                 }
-
+                else if(val.toString().equals("Contract"))
+                {
+                   Contract contract= ((Contract) tableContract.getItems().get(i));
+                    onContractEditClicked(contract);
+                }
             }
         });
     }
