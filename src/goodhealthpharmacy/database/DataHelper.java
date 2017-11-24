@@ -44,6 +44,7 @@ public class DataHelper {
         return docList;
 
     }
+    
     public static boolean insertDoctor(String ssn, String name, String speciality, String year_of_exp)
     {
         
@@ -83,6 +84,28 @@ public class DataHelper {
         }
         return patientList;
 
+    }
+     public static boolean insertPatient(String ssn, String name, String address, String age, String pry_phy)
+    {
+        
+        try {
+            Connection connection = Connector.getInstance();
+            Statement stmt = connection.createStatement();
+
+            String exeqSql="insert into Pri_Phy_Patient values ( '"+ ssn +"', '"+ name +"', '"+ age+"', '"+ address +"', '"+pry_phy+"')";
+            System.out.println(exeqSql);
+            boolean res= stmt.execute(exeqSql);
+            System.out.println("res: "+ res);
+        } 
+        catch (SQLIntegrityConstraintViolationException e) {
+            e.printStackTrace();
+            return false;
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return  true;
     }
      public static ArrayList<Pharmacy> getPharmacyList() {
         ArrayList<Pharmacy> pharmacyList=new ArrayList<>();

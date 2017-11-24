@@ -84,6 +84,10 @@ public class FXMLDrugManagementController implements Initializable {
     Button btnDrugSell;
 
     private  ObservableList<Drug> data;
+    
+    private int CURRENT_SELECTION = 1;
+    private int FLAG_SHOW_ALL = 1;
+    private int FLAG_SHOW_SELECTIVE = 2;
 
     @FXML
     private void handleButtonAction(ActionEvent event) {
@@ -206,10 +210,14 @@ public class FXMLDrugManagementController implements Initializable {
     @FXML
     private void onSelectiveShow(ActionEvent event) {
          System.out.println(event.getSource() + "  selective show clicked");
+         CURRENT_SELECTION =  FLAG_SHOW_SELECTIVE;
+         initDrugTable();
     }
      @FXML
     private void onAllShow(ActionEvent event) {
       System.out.println(event.getSource() + "  on all show clicked");
+      CURRENT_SELECTION = FLAG_SHOW_ALL;
+      initDrugTable();
 
     }
       @FXML

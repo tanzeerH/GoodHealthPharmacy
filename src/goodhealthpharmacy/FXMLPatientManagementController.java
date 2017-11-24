@@ -28,6 +28,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TablePosition;
@@ -52,11 +53,14 @@ public class FXMLPatientManagementController implements Initializable {
     @FXML
     TextField txtName;
     @FXML
-    TextField txtSpeciality;
+    TextField txtAddress;
     @FXML
-    TextField txtExp;
+    TextField txtAge;
+    @FXML
+    ComboBox comboBoxPryPhi;
     @FXML
     Button btnAdd;
+    
     
     @FXML
     Button btnPatient;
@@ -84,6 +88,7 @@ public class FXMLPatientManagementController implements Initializable {
     TableView tableDoctor;
 
     private  ObservableList<Patient> data;
+    private  ObservableList<String> phySnnList;
 
     @FXML
     private void handleButtonAction(ActionEvent event) {
@@ -214,21 +219,34 @@ public class FXMLPatientManagementController implements Initializable {
     @FXML
     private void handleAddButton(ActionEvent event) {
         System.out.println(event.getSource() + "  add clicked");
-        if(txtSsn.getText().length() == 0 || txtName.getText().length() == 0 ||
-                txtSpeciality.getText().length() == 0 || txtExp.getText().length() == 0)
+        if(txtSsn.getText().trim().length() == 0 || txtName.getText().trim().length() == 0 ||
+                txtAddress.getText().trim().length() == 0 || txtAge.getText().trim().length() == 0 || txtAge.getText().trim().length() == 0)
         {
             CommonUtils.showWarningDialog();
         }
+        else  if( comboBoxPryPhi.getSelectionModel().getSelectedItem() == null )
+        {
+             CommonUtils.showNotSelectedWarningDialog();
+        }
+        else if( !CommonUtils.isNumber(txtAge.getText()))
+        {
+             JOptionPane.showMessageDialog(null, "Please insert a valid value for age. ");
+        }else if( Integer.parseInt(txtAge.getText())>150 || Integer.parseInt(txtAge.getText())<15)
+        {
+             JOptionPane.showMessageDialog(null, "Please insert a valid value for age. ");
+        }
         else
         {
-           boolean res= DataHelper.insertDoctor(txtSsn.getText(), txtName.getText(), txtSpeciality.getText(), txtExp.getText());
+           String phy_ssn = comboBoxPryPhi.getSelectionModel().getSelectedItem().toString().trim().split(":")[0].trim();
+           boolean res= DataHelper.insertPatient(txtSsn.getText(), txtName.getText(), txtAddress.getText(), txtAge.getText(),phy_ssn);
            if(res)
            {
                 JOptionPane.showMessageDialog(null, "Successfully Inserted.");
                 txtSsn.setText("");
                 txtName.setText("");
-                txtSpeciality.setText("");
-                txtExp.setText("");
+                txtAddress.setText("");
+                txtAge.setText("");
+                comboBoxPryPhi.getSelectionModel().clearSelection();
                 initPatientTable();
            }
            else
@@ -248,6 +266,8 @@ public class FXMLPatientManagementController implements Initializable {
     {
         ArrayList<Patient> patientList= DataHelper.getPatientList();
         data= FXCollections.observableArrayList(patientList);
+        phySnnList = FXCollections.observableArrayList(DataHelper.getPhySSNList());
+        comboBoxPryPhi.getItems().addAll(phySnnList);
     }
 
     private void initPatientTable() {

@@ -21,8 +21,19 @@ public class CommonUtils {
     {
             JOptionPane.showMessageDialog(null, "Please select an option.");
     }
+   
     public static void showTooBigTextWarningDialog()
     {
             JOptionPane.showMessageDialog(null, "Input is too big.");
+    }
+    public static boolean isNumber(String text)
+    {
+     try {
+        Integer.parseInt(text);
+    } catch(Exception e) {
+        System.out.println("Non-numeric character exist");
+        return  false;
+    }
+     return true;
     }
 }

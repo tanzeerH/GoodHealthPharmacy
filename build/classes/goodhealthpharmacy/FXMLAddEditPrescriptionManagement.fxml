@@ -3,12 +3,15 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.effect.Light.Distant?>
 <?import javafx.scene.effect.Lighting?>
 <?import javafx.scene.effect.Shadow?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
 <AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="goodhealthpharmacy.FXMLAddEditPrescriptionManagementController">
     <children>
@@ -78,14 +81,58 @@
             </Lighting>
          </effect>
       </HBox>
-      <TextField fx:id="txtDropOffTime" layoutX="84.0" layoutY="202.0" prefHeight="25.0" prefWidth="150.0" promptText="Drop Off Time" />
-      <Button fx:id="btnAdd" layoutX="195.0" layoutY="561.0" mnemonicParsing="false" onAction="#handleAddButton" text="Add" />
-      <TextField fx:id="txtPickUpTime" layoutX="86.0" layoutY="248.0" promptText="Pick Up Time" />
-      <ComboBox fx:id="comboBoxStatus" layoutX="83.0" layoutY="117.0" prefWidth="150.0" promptText="Status" />
-      <TextField fx:id="txtQuantity" layoutX="87.0" layoutY="398.0" promptText="Quantity" />
-      <TextField fx:id="txtDate" layoutX="85.0" layoutY="450.0" promptText="Date" />
-      <ComboBox fx:id="comboBoxTradeName" layoutX="87.0" layoutY="489.0" prefWidth="150.0" promptText="Trade Name" />
-      <ComboBox fx:id="comboBoxSsn" layoutX="87.0" layoutY="300.0" prefWidth="150.0" promptText="SSN" />
-      <ComboBox fx:id="comboBoxPhySsn" layoutX="87.0" layoutY="352.0" prefWidth="150.0" promptText="Phy SSN" />
+      <Button fx:id="btnAdd" layoutX="357.0" layoutY="542.0" mnemonicParsing="false" onAction="#handleAddButton" text="Add" />
+      <ComboBox fx:id="comboBoxStatus" layoutX="245.0" layoutY="119.0" prefWidth="150.0" promptText="Status" />
+      <TextField fx:id="txtQuantity" layoutX="246.0" layoutY="398.0" promptText="Quantity" />
+      <ComboBox fx:id="comboBoxTradeName" layoutX="247.0" layoutY="485.0" prefWidth="150.0" promptText="Trade Name" />
+      <ComboBox fx:id="comboBoxSsn" layoutX="246.0" layoutY="300.0" prefWidth="150.0" promptText="SSN" />
+      <ComboBox fx:id="comboBoxPhySsn" layoutX="245.0" layoutY="349.0" prefWidth="150.0" promptText="Phy SSN" />
+      <Text layoutX="173.0" layoutY="137.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Status :">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Text>
+      <Text layoutX="125.0" layoutY="212.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Drop Of Time" wrappingWidth="110.28124988079071">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Text>
+      <Text layoutX="118.0" layoutY="266.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Pick Up Time" wrappingWidth="110.28125">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Text>
+      <Text layoutX="173.0" layoutY="318.0" strokeType="OUTSIDE" strokeWidth="0.0" text="SSN">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Text>
+      <Text layoutX="173.0" layoutY="367.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Phy SSN">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Text>
+      <Text layoutX="154.0" layoutY="416.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Quantity" wrappingWidth="82.35546875">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Text>
+      <Text layoutX="180.0" layoutY="458.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Date">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Text>
+      <Text layoutX="157.0" layoutY="503.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Trade Name">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Text>
+      <DatePicker fx:id="dpDate" layoutX="245.0" layoutY="451.0" />
+      <DatePicker fx:id="dpDropOff" layoutX="245.0" layoutY="195.0" />
+      <DatePicker fx:id="dpPickUp" layoutX="245.0" layoutY="249.0" />
+      <ComboBox fx:id="comboDropHour" layoutX="456.0" layoutY="195.0" prefWidth="90.0" promptText="Hour" />
+      <ComboBox fx:id="comboPickMin" layoutX="606.0" layoutY="249.0" prefWidth="90.0" promptText="Min" />
+      <ComboBox fx:id="comboPickHour" layoutX="456.0" layoutY="249.0" prefWidth="90.0" promptText="Hour" />
+      <ComboBox fx:id="comboDropMin" layoutX="606.0" layoutY="195.0" prefWidth="90.0" promptText="Min" />
     </children>
 </AnchorPane>

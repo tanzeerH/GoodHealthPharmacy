@@ -16,6 +16,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 import javafx.beans.value.ChangeListener;
@@ -34,6 +36,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TablePosition;
@@ -46,6 +49,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
@@ -69,16 +73,26 @@ public class FXMLAddEditPrescriptionManagementController implements Initializabl
     ComboBox comboBoxSsn;
     @FXML
     ComboBox comboBoxPhySsn;
+    @FXML
+    ComboBox comboPickMin;
+  @FXML
+    ComboBox comboPickHour;
+  @FXML
+    ComboBox comboDropHour;
+  @FXML
+    ComboBox comboDropMin;
   
-    @FXML
-    TextField txtDropOffTime;
-    @FXML
-    TextField txtPickUpTime;
+  
+ 
    
     @FXML
     TextField txtQuantity;
     @FXML
-    TextField txtDate;
+    DatePicker dpDate;
+    @FXML
+    DatePicker dpDropOff;
+    @FXML
+    DatePicker dpPickUp;
     @FXML
     Button btnAdd;
     
@@ -107,6 +121,10 @@ public class FXMLAddEditPrescriptionManagementController implements Initializabl
     private  ObservableList<String> ssnList;
     private  ObservableList<String> phySnnList;
     private  ObservableList<String> statusList;
+    private  ObservableList<String> hourList;
+    private  ObservableList<String> minList;
+     private  ArrayList<String> mHourList = new ArrayList<>();
+    private  ArrayList<String> mMinList  = new ArrayList<>();
 
 
 
@@ -203,14 +221,16 @@ public class FXMLAddEditPrescriptionManagementController implements Initializabl
     }
     @FXML
     private void handleAddButton(ActionEvent event) {
-        System.out.println(event.getSource() + "  add clicked" );
-        if( txtDropOffTime.getText().trim().length() == 0 ||
-                txtPickUpTime.getText().trim().length() == 0 || txtQuantity.getText().trim().length() == 0 || txtDate.getText().trim().length() == 0)
+        System.out.println(event.getSource() + "  add clicked" + dpDate.getValue().toString());
+        if( dpDropOff.getValue().toString().trim().length() == 0 ||
+                 dpPickUp.getValue().toString().trim().length() == 0 || txtQuantity.getText().trim().length() == 0 || dpDate.getValue().toString().trim().length() == 0)
         {
             CommonUtils.showWarningDialog();
         } 
         else if( comboBoxStatus.getSelectionModel().getSelectedItem() == null || 
-          comboBoxSsn.getSelectionModel().getSelectedItem() == null || comboBoxPhySsn.getSelectionModel().getSelectedItem() == null   ||comboBoxTradeName.getSelectionModel().getSelectedItem() == null   )
+          comboBoxSsn.getSelectionModel().getSelectedItem() == null || comboBoxPhySsn.getSelectionModel().getSelectedItem() == null   ||comboBoxTradeName.getSelectionModel().getSelectedItem() == null  || 
+                comboDropHour.getSelectionModel().getSelectedItem() == null || 
+          comboDropMin.getSelectionModel().getSelectedItem() == null || comboPickHour.getSelectionModel().getSelectedItem() == null   ||comboPickMin.getSelectionModel().getSelectedItem() == null)
         {
              CommonUtils.showNotSelectedWarningDialog();
         }
@@ -220,10 +240,12 @@ public class FXMLAddEditPrescriptionManagementController implements Initializabl
             
             String ssn = comboBoxSsn.getSelectionModel().getSelectedItem().toString().trim().split(":")[0].trim();
             String phy_ssn=  comboBoxPhySsn.getSelectionModel().getSelectedItem().toString().trim().split(":")[0].trim();
-            String pre_date = txtDate.getText().toString().trim();
+            String pre_date = dpDate.getValue().toString();
             String quantity = txtQuantity.getText().toString().trim();
-            String drop_off_time = txtDropOffTime.getText().toString().trim();
-            String pick_up_time = txtPickUpTime.getText().toString().trim();
+            String drop_off_time = dpDropOff.getValue().toString()+" "+ comboDropHour.getSelectionModel().getSelectedItem().toString().trim()+":"+
+                    comboDropMin.getSelectionModel().getSelectedItem().toString().trim()+":00.00000";
+            String pick_up_time = dpPickUp.getValue().toString()+" "+ comboPickHour.getSelectionModel().getSelectedItem().toString().trim()+":"+
+                    comboPickMin.getSelectionModel().getSelectedItem().toString().trim()+":00.00000";
             String trade_name = comboBoxTradeName.getSelectionModel().getSelectedItem().toString().trim().split(":")[0].trim();
             String  pharm_co_name =  comboBoxTradeName.getSelectionModel().getSelectedItem().toString().trim().split(":")[1].trim();
 
@@ -245,6 +267,90 @@ public class FXMLAddEditPrescriptionManagementController implements Initializabl
            }*/
         }
     }
+   private void setDatePicker()
+   {
+       String pattern = "yyyy/MM/dd";
+
+        dpDate.setPromptText(pattern.toLowerCase());
+
+        dpDate.setConverter(new StringConverter<LocalDate>() {
+             DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(pattern);
+
+             @Override 
+             public String toString(LocalDate date) {
+                 if (date != null) {
+                     return dateFormatter.format(date);
+                 } else {
+                     return "";
+                 }
+             }
+
+             @Override 
+             public LocalDate fromString(String string) {
+                 if (string != null && !string.isEmpty()) {
+                     return LocalDate.parse(string, dateFormatter);
+                 } else {
+                     return null;
+                 }
+             }
+         });
+   }
+    private void setDatePickerForPickUp()
+   {
+       String pattern = "yyyy-MM-dd";
+
+        dpPickUp.setPromptText(pattern.toLowerCase());
+
+        dpPickUp.setConverter(new StringConverter<LocalDate>() {
+             DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(pattern);
+
+             @Override 
+             public String toString(LocalDate date) {
+                 if (date != null) {
+                     return dateFormatter.format(date);
+                 } else {
+                     return "";
+                 }
+             }
+
+             @Override 
+             public LocalDate fromString(String string) {
+                 if (string != null && !string.isEmpty()) {
+                     return LocalDate.parse(string, dateFormatter);
+                 } else {
+                     return null;
+                 }
+             }
+         });
+   }
+     private void setDatePickerForDropOff()
+   {
+       String pattern = "yyyy-MM-dd";
+
+        dpDropOff.setPromptText(pattern.toLowerCase());
+
+        dpDropOff.setConverter(new StringConverter<LocalDate>() {
+             DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(pattern);
+
+             @Override 
+             public String toString(LocalDate date) {
+                 if (date != null) {
+                     return dateFormatter.format(date);
+                 } else {
+                     return "";
+                 }
+             }
+
+             @Override 
+             public LocalDate fromString(String string) {
+                 if (string != null && !string.isEmpty()) {
+                     return LocalDate.parse(string, dateFormatter);
+                 } else {
+                     return null;
+                 }
+             }
+         });
+   }
     private void insertOrUpdate(String status, String pharm_co_name, String date, String quantity, String ssn, String phy_ssn, String drop_off_time, String pick_up_time, String trade_name)
     {
         
@@ -253,10 +359,13 @@ public class FXMLAddEditPrescriptionManagementController implements Initializabl
            {
                 JOptionPane.showMessageDialog(null, "Successfully Inserted.");
                 //txtSsn.setText("");
-                txtDropOffTime.setText("");
-                txtDropOffTime.setText("");
+                //txtDropOffTime.setText("");
+                //txtDropOffTime.setText("");
                 txtQuantity.setText("");
-                txtDate.setText("");
+                //txtDate.setText("");
+                dpDate.setPromptText("yyyy/MM/dd");
+                dpDropOff.setPromptText("yyyy-MM-dd");
+                dpPickUp.setPromptText("yyyy-MM-dd");
 
                // initContractTable();
            }
@@ -271,9 +380,31 @@ public class FXMLAddEditPrescriptionManagementController implements Initializabl
     @Override
     public void initialize(URL url, ResourceBundle rb) {
        
+        setDatePicker();
+        setDatePickerForDropOff();
+        setDatePickerForPickUp();
+        populateHourAndMinute();
         loadData();
        // initUI();
         //initContractTable();
+    }
+    private void populateHourAndMinute()
+    {
+        for( int i=0 ;i<25;i++)
+        {
+            if(i<10)
+                mHourList.add("0"+i);
+            else
+                mHourList.add(""+i);
+        }
+        for( int i=0 ;i<61;i++)
+        {
+            if(i<10)
+                mMinList.add("0"+i);
+            else
+                mMinList.add(""+i);
+        }
+        
     }
    
    
@@ -293,6 +424,8 @@ public class FXMLAddEditPrescriptionManagementController implements Initializabl
         tradeNameList = FXCollections.observableArrayList(DataHelper.getDrugTradeNameList());
         ssnList = FXCollections.observableArrayList(DataHelper.getPatientSSNList());
         phySnnList = FXCollections.observableArrayList(DataHelper.getPhySSNList());
+        hourList = FXCollections.observableArrayList(mHourList);
+        minList = FXCollections.observableArrayList(mMinList);
        // System.out.println("size: "+ tradeNameList.size());
        // comboBoxCompany.getItems().addAll(companyList);
         comboBoxTradeName.getItems().addAll(tradeNameList);
@@ -307,6 +440,12 @@ public class FXMLAddEditPrescriptionManagementController implements Initializabl
         
         statusList= FXCollections.observableArrayList(mStatusList);
         comboBoxStatus.getItems().addAll(statusList);
+        
+        comboDropHour.getItems().addAll(hourList);
+        comboPickHour.getItems().addAll(hourList);
+        comboPickMin.getItems().addAll(minList);
+        comboDropMin.getItems().addAll(minList);
+       
         
 
     }
