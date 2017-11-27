@@ -79,8 +79,8 @@
             </Lighting>
          </effect>
       </HBox>
-      <TextField fx:id="startDate" layoutX="84.0" layoutY="155.0" prefHeight="25.0" prefWidth="150.0" promptText="Stat Date" />
-      <TextField fx:id="endDate" layoutX="84.0" layoutY="202.0" prefHeight="25.0" prefWidth="150.0" promptText="End Date" />
+      <TextField fx:id="startDate" layoutX="84.0" layoutY="155.0" prefHeight="25.0" prefWidth="150.0" promptText="Stat Date (yyyy-mm-dd)" />
+      <TextField fx:id="endDate" layoutX="84.0" layoutY="202.0" prefHeight="25.0" prefWidth="150.0" promptText="End Date (yyyy-mm-dd)" />
       <Button fx:id="btnAdd" layoutX="603.0" layoutY="561.0" mnemonicParsing="false" onAction="#handleAddButton" text="Add" />
       <TextField fx:id="txtName" layoutX="85.0" layoutY="246.0" promptText="Supervisor" />
       <TextArea fx:id="txtContractText" layoutX="75.0" layoutY="343.0" prefHeight="200.0" prefWidth="528.0" promptText="Contract Text" />
