@@ -393,11 +393,20 @@ public class FXMLContractManagementController implements Initializable {
                 int i = tableContract.getSelectionModel().getSelectedIndex();
                  System.out.println("Selected Value" + val );
                 if (val.toString().equals("Remove")) {
-                 //  String s = ((Contract) tableContract.getItems().get(i)).getSsn();
+                   String pharm_id= ((Contract) tableContract.getItems().get(i)).getPharm_id();
+                    String pharm_co_name= ((Contract) tableContract.getItems().get(i)).getPharm_co_name();
                    // System.out.println(s);
                     int dialogButton = JOptionPane.YES_NO_OPTION;
                     int dialog_result = JOptionPane.showConfirmDialog(null, "Are you sure?");
                     if (dialog_result == 0) {
+                         boolean res= DataHelper.deleteContract(pharm_id, pharm_co_name);
+                       if(res)
+                       {
+                           JOptionPane.showMessageDialog(null, "Successfully Deleted.");
+                           initContractTable();
+                       }
+                       else
+                           JOptionPane.showMessageDialog(null, "Error in delete. Integrity Violated.");
                         System.out.println("Yes option");
                     } else {
                         System.out.println("No Option");

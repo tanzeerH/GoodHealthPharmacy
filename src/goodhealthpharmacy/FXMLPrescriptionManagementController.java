@@ -124,9 +124,10 @@ public class FXMLPrescriptionManagementController implements Initializable {
     
      private int CURRENT_SELECTION = 1;
     private int FLAG_SHOW_ALL = 1;
-     private int FLAG_SHOW_BY_STATUS_PENDING = 3;
-      private int FLAG_SHOW_BY_STATUS_COMPLETED_TODAY = 4;
-     private int FLAG_SHOW_BY_PATIENT = 10;
+    private int FLAG_SHOW_BY_STATUS_PENDING = 3;
+    private int FLAG_SHOW_BY_STATUS_COMPLETED_TODAY = 4;
+    private int FLAG_SHOW_BY_STATUS_READY_TO_GO = 5;
+    private int FLAG_SHOW_BY_PATIENT = 10;
     private int FLAG_SHOW_BY_SEARCH = 11;
 
     private int FLAG_SHOW_SELECTIVE = 2;
@@ -383,6 +384,11 @@ public class FXMLPrescriptionManagementController implements Initializable {
            
              patientList=DataHelper.getPrescriptionListByCompletedStatus(getTodaysDate());
         }
+         else if(CURRENT_SELECTION == FLAG_SHOW_BY_STATUS_READY_TO_GO)
+        {
+           
+             patientList=DataHelper.getPrescriptionListByReadyToGoStatus();
+        }
         
             
         data= FXCollections.observableArrayList(patientList);
@@ -423,6 +429,10 @@ public class FXMLPrescriptionManagementController implements Initializable {
             else  if(status.equals("Completed Today"))
             {
                 CURRENT_SELECTION =FLAG_SHOW_BY_STATUS_COMPLETED_TODAY;
+            }
+             else  if(status.equals("Ready To Go"))
+            {
+                CURRENT_SELECTION =FLAG_SHOW_BY_STATUS_READY_TO_GO;
             }
             System.out.println(status);
             initPrescriptionTable();
@@ -618,7 +628,7 @@ public class FXMLPrescriptionManagementController implements Initializable {
         remove.setPrefWidth(column_maxWidth);
        
         tablePrescription.setItems(data);
-
+        tablePrescription.getColumns().clear();
         tablePrescription.getColumns().addAll(pre_id,status,drop_off_time,pick_up_time,ssn,phy_ssn,quantity,pre_date,trade_name,pharm_co_name,remove);
 
         tablePrescription.getSelectionModel().setCellSelectionEnabled(true);

@@ -332,7 +332,7 @@ public class FXMLPharmacyManagementController implements Initializable {
         remove.setPrefWidth(column_maxWidth);
         tablePharmacy.setItems(data);
 
-        tablePharmacy.getColumns().addAll(pharm_id, name,address,phone, remove);
+        tablePharmacy.getColumns().addAll(pharm_id, name,address,phone);
 
         tablePharmacy.getSelectionModel().setCellSelectionEnabled(true);
         ObservableList selectedCells = tablePharmacy.getSelectionModel().getSelectedCells();

@@ -304,7 +304,7 @@ public class FXMLSellManagementController implements Initializable {
 
     private void initSellTable() {
         loadData();
-        int column_maxWidth = Constants.TABLE_WIDTH / 5;
+        int column_maxWidth = Constants.TABLE_WIDTH / 4;
         tableSell.setEditable(true);
         TableColumn price = new TableColumn("Price");
         TableColumn pharm_id = new TableColumn("Pharmacy Id");
@@ -388,7 +388,8 @@ public class FXMLSellManagementController implements Initializable {
         remove.setCellValueFactory(new PropertyValueFactory<Sell, String>("remove"));
         remove.setPrefWidth(column_maxWidth);
         tableSell.setItems(data);
-
+        if(tableSell != null)
+            tableSell.getColumns().clear();
         tableSell.getColumns().addAll(price, pharm_id, trade_name, pharm_co_name,remove);
 
         tableSell.getSelectionModel().setCellSelectionEnabled(true);

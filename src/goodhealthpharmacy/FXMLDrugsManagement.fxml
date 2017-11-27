@@ -79,11 +79,11 @@
          </effect>
       </HBox>
       <TableView fx:id="tableDrug" layoutX="75.0" layoutY="173.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="800.0" />
-      <TextField fx:id="txtSsn" layoutX="75.0" layoutY="91.0" promptText="SSN" />
-      <TextField fx:id="txtName" layoutX="261.0" layoutY="91.0" prefHeight="25.0" prefWidth="170.0" promptText="Name" />
-      <TextField fx:id="txtSpeciality" layoutX="458.0" layoutY="91.0" promptText="Speciality" />
-      <TextField fx:id="txtExp" layoutX="661.0" layoutY="91.0" promptText="Year of Experience" />
-      <Button fx:id="btnAdd" layoutX="772.0" layoutY="126.0" mnemonicParsing="false" onAction="#handleAddButton" text="Add" />
+      <TextField fx:id="txtSsn" layoutX="75.0" layoutY="91.0" promptText="SSN" visible="false" />
+      <TextField fx:id="txtName" layoutX="261.0" layoutY="91.0" prefHeight="25.0" prefWidth="170.0" promptText="Name" visible="false" />
+      <TextField fx:id="txtSpeciality" layoutX="458.0" layoutY="91.0" promptText="Speciality" visible="false" />
+      <TextField fx:id="txtExp" layoutX="661.0" layoutY="91.0" promptText="Year of Experience" visible="false" />
+      <Button fx:id="btnAdd" layoutX="772.0" layoutY="126.0" mnemonicParsing="false" onAction="#handleAddButton" text="Add" visible="false" />
       <Button fx:id="btnShowAll" layoutX="82.0" layoutY="138.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onAllShow" prefHeight="30.0" prefWidth="100.0" text="Show All" />
       <Button fx:id="btnShowSelective" layoutX="235.0" layoutY="138.0" mnemonicParsing="false" onAction="#onSelectiveShow" prefHeight="30.0" text="Drugs Sold by All Phramacies" />
       <Button fx:id="btnDrugSell" layoutX="431.0" layoutY="138.0" mnemonicParsing="false" onAction="#onDrugSell" prefHeight="30.0" prefWidth="100.0" text="Drug Sell" />

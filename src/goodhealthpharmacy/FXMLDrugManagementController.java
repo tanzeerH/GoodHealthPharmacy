@@ -376,8 +376,9 @@ public class FXMLDrugManagementController implements Initializable {
         remove.setCellValueFactory(new PropertyValueFactory<Drug, String>("remove"));
         remove.setPrefWidth(column_maxWidth);
         tableDrug.setItems(data);
-
-        tableDrug.getColumns().addAll(tradeName, pharm_co, formula,remove);
+        if(tableDrug!= null)
+            tableDrug.getColumns().clear();
+        tableDrug.getColumns().addAll(tradeName, pharm_co, formula);
 
         tableDrug.getSelectionModel().setCellSelectionEnabled(true);
         ObservableList selectedCells = tableDrug.getSelectionModel().getSelectedCells();

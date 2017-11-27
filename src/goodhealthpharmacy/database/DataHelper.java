@@ -278,7 +278,8 @@ public class DataHelper {
         "( Select TRADE_NAME from  SELL where SELL.PHARM_ID='"+pharmacy_id+"') and Sell.PHARM_CO_NAME IN " +
         "( Select PHARM_CO_NAME from  SELL where SELL.PHARM_ID='"+pharmacy_id+"') and SEll.PHARM_ID=PHARMACY.PHARM_ID");
             while (rs.next()) {
-                Sell sell=new Sell(rs.getString("trade_name"), rs.getString("pharm_co_name"),rs.getString("pharm_id"), rs.getString("price"));
+                String phone= rs.getString("phone");
+                Sell sell=new Sell(rs.getString("trade_name"), rs.getString("pharm_co_name"),rs.getString("pharm_id")+" : phone ("+ phone +")", rs.getString("price"));
                 sellList.add(sell);
             }
         } catch (SQLException e) {
@@ -360,7 +361,13 @@ public class DataHelper {
 
             ResultSet rs = stmt.executeQuery("select * from Prescription");
             while (rs.next()) {
-                Prescription prescription=new Prescription(rs.getString("pre_id"), rs.getString("status"),rs.getString("drop_off_time"), rs.getString("pick_up_time"),rs.getString("ssn"),
+                String drop_of_date=rs.getString("drop_off_time");
+                if(drop_of_date.startsWith("2100"))
+                    drop_of_date="Not Set";
+                String pick_up_date=rs.getString("pick_up_time");
+                if(pick_up_date.startsWith("2100"))
+                    pick_up_date="Not Set";
+                Prescription prescription=new Prescription(rs.getString("pre_id"), rs.getString("status"),drop_of_date, pick_up_date,rs.getString("ssn"),
                         rs.getString("phy_ssn"),rs.getString("pre_date"),rs.getString("quantity"), rs.getString("trade_name"),rs.getString("pharm_co_name"));
                 prescriptionList.add(prescription);
             }
@@ -415,6 +422,27 @@ public class DataHelper {
             ResultSet rs = stmt.executeQuery("select * from Prescription where status='completed'");
             while (rs.next()) {
                 if(rs.getString("drop_off_time").startsWith(date))
+                {
+                Prescription prescription=new Prescription(rs.getString("pre_id"), rs.getString("status"),rs.getString("drop_off_time"), rs.getString("pick_up_time"),rs.getString("ssn"),
+                        rs.getString("phy_ssn"),rs.getString("pre_date"),rs.getString("quantity"), rs.getString("trade_name"),rs.getString("pharm_co_name"));
+                prescriptionList.add(prescription);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return prescriptionList;
+
+    }
+           public static ArrayList<Prescription> getPrescriptionListByReadyToGoStatus() {
+        ArrayList<Prescription> prescriptionList=new ArrayList<>();
+        try {
+            Connection connection = Connector.getInstance();
+            Statement stmt = connection.createStatement();
+
+            ResultSet rs = stmt.executeQuery("select * from Prescription where status='ready'");
+            while (rs.next()) {
+                if(rs.getString("pick_up_time").startsWith("2100"))
                 {
                 Prescription prescription=new Prescription(rs.getString("pre_id"), rs.getString("status"),rs.getString("drop_off_time"), rs.getString("pick_up_time"),rs.getString("ssn"),
                         rs.getString("phy_ssn"),rs.getString("pre_date"),rs.getString("quantity"), rs.getString("trade_name"),rs.getString("pharm_co_name"));
@@ -533,6 +561,72 @@ public class DataHelper {
             Statement stmt = connection.createStatement();
 
             String exeqSql="Delete from Prescription where pre_id = '"+prep_id+"'";
+            System.out.println(exeqSql);
+            boolean res= stmt.execute(exeqSql);
+            System.out.println("res: "+ res);
+        } 
+        catch (SQLIntegrityConstraintViolationException e) {
+            e.printStackTrace();
+            return false;
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return  true;
+    }
+        public static boolean deleteDoctor(String ssn)
+    {
+        
+        try {
+            Connection connection = Connector.getInstance();
+            Statement stmt = connection.createStatement();
+
+            String exeqSql="Delete from Doctor where ssn = '"+ssn+"'";
+            System.out.println(exeqSql);
+            boolean res= stmt.execute(exeqSql);
+            System.out.println("res: "+ res);
+        } 
+        catch (SQLIntegrityConstraintViolationException e) {
+            e.printStackTrace();
+            return false;
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return  true;
+    }
+         public static boolean deletePatient(String ssn)
+    {
+        
+        try {
+            Connection connection = Connector.getInstance();
+            Statement stmt = connection.createStatement();
+
+            String exeqSql="Delete from Pri_Phy_Patient where ssn = '"+ssn+"'";
+            System.out.println(exeqSql);
+            boolean res= stmt.execute(exeqSql);
+            System.out.println("res: "+ res);
+        } 
+        catch (SQLIntegrityConstraintViolationException e) {
+            e.printStackTrace();
+            return false;
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return  true;
+    }
+     public static boolean deleteContract(String pharm_id, String pharm_co_name)
+    {
+        
+        try {
+            Connection connection = Connector.getInstance();
+            Statement stmt = connection.createStatement();
+
+            String exeqSql="Delete from Contract where pharm_id = '"+pharm_id+"'"+ " and pharm_co_name = '"+pharm_co_name+"'";
             System.out.println(exeqSql);
             boolean res= stmt.execute(exeqSql);
             System.out.println("res: "+ res);

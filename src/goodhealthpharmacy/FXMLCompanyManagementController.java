@@ -325,7 +325,7 @@ public class FXMLCompanyManagementController implements Initializable {
         remove.setPrefWidth(column_maxWidth);
         tableCompany.setItems(data);
 
-        tableCompany.getColumns().addAll(name,phone,remove);
+        tableCompany.getColumns().addAll(name,phone);
 
         tableCompany.getSelectionModel().setCellSelectionEnabled(true);
         ObservableList selectedCells = tableCompany.getSelectionModel().getSelectedCells();

@@ -415,6 +415,14 @@ public class FXMLPatientManagementController implements Initializable {
                     int dialogButton = JOptionPane.YES_NO_OPTION;
                     int dialog_result = JOptionPane.showConfirmDialog(null, "Are you sure?");
                     if (dialog_result == 0) {
+                        boolean res= DataHelper.deletePatient(s);
+                       if(res)
+                       {
+                           JOptionPane.showMessageDialog(null, "Successfully Deleted.");
+                           initPatientTable();
+                       }
+                       else
+                           JOptionPane.showMessageDialog(null, "Error in delete. Integrity Violated. Check  Prescription table.");
                         System.out.println("Yes option");
                     } else {
                         System.out.println("No Option");
