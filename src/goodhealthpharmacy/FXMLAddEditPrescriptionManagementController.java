@@ -97,7 +97,7 @@ public class FXMLAddEditPrescriptionManagementController implements Initializabl
     Button btnAdd;
     
     @FXML
-    Button btnContract;
+    Button btnPatient;
     
     @FXML
     Button btnDocManage;
@@ -110,6 +110,12 @@ public class FXMLAddEditPrescriptionManagementController implements Initializabl
     
     @FXML
     Button btnDrug;
+    
+    @FXML
+    Button btnContract;
+    
+    @FXML
+    Button btnPrescription;
 
 
     @FXML
@@ -129,17 +135,17 @@ public class FXMLAddEditPrescriptionManagementController implements Initializabl
 
 
 
-    @FXML
+   @FXML
     private void handleButtonAction(ActionEvent event) {
        System.out.println(event.getSource()+"  patient clicked");
         Stage stage;
         Parent root;
-        stage = (Stage) btnContract.getScene().getWindow();
+        stage = (Stage) btnPatient.getScene().getWindow();
         //load up OTHER FXML document
         try {
-             root = FXMLLoader.load(getClass().getResource("FXMLDoctorManagement.fxml"));
+             root = FXMLLoader.load(getClass().getResource("FXMLPatientManagement.fxml"));
              Scene scene = new Scene(root,Constants.WINDOW_WIDTH,Constants.WINDOW_HEIGHT);
-
+            stage.setTitle("Patient Management");
             stage.setScene(scene);
             stage.show();
         } catch (IOException e) {
@@ -152,12 +158,12 @@ public class FXMLAddEditPrescriptionManagementController implements Initializabl
      System.out.println(event.getSource()+"  doctor clicked");
         Stage stage;
         Parent root;
-        stage = (Stage) btnContract.getScene().getWindow();
+        stage = (Stage) btnPatient.getScene().getWindow();
         //load up OTHER FXML document
         try {
              root = FXMLLoader.load(getClass().getResource("FXMLDoctorManagement.fxml"));
              Scene scene = new Scene(root,Constants.WINDOW_WIDTH,Constants.WINDOW_HEIGHT);
-             
+            stage.setTitle("Doctor Management");
             stage.setScene(scene);
             stage.show();
         } catch (IOException e) {
@@ -170,7 +176,7 @@ public class FXMLAddEditPrescriptionManagementController implements Initializabl
      System.out.println(event.getSource()+"  doctor clicked");
         Stage stage;
         Parent root;
-        stage = (Stage) btnContract.getScene().getWindow();
+        stage = (Stage) btnPatient.getScene().getWindow();
         //load up OTHER FXML document
         try {
              root = FXMLLoader.load(getClass().getResource("FXMLPharmacyManagement.fxml"));
@@ -219,33 +225,85 @@ public class FXMLAddEditPrescriptionManagementController implements Initializabl
             e.printStackTrace();
         }
     }
+      @FXML
+    private void onContractManage(ActionEvent event) {
+     System.out.println(event.getSource()+"  contract clicked");
+        Stage stage;
+        Parent root;
+        stage = (Stage) btnCompany.getScene().getWindow();
+        //load up OTHER FXML document
+        try {
+             root = FXMLLoader.load(getClass().getResource("FXMLContractManagement.fxml"));
+             Scene scene = new Scene(root,Constants.WINDOW_WIDTH,Constants.WINDOW_HEIGHT);
+
+            stage.setTitle("Contract Management");
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+      @FXML
+    private void onPrescriptionManage(ActionEvent event) {
+     System.out.println(event.getSource()+"  contract clicked");
+        Stage stage;
+        Parent root;
+        stage = (Stage) btnCompany.getScene().getWindow();
+        //load up OTHER FXML document
+        try {
+             root = FXMLLoader.load(getClass().getResource("FXMLPrescriptionManagement.fxml"));
+             Scene scene = new Scene(root,Constants.WINDOW_WIDTH,Constants.WINDOW_HEIGHT);
+
+            stage.setTitle("Prescription Management");
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     @FXML
     private void handleAddButton(ActionEvent event) {
         System.out.println(event.getSource() + "  add clicked" + dpDate.getValue().toString());
-        if( dpDropOff.getValue().toString().trim().length() == 0 ||
-                 dpPickUp.getValue().toString().trim().length() == 0 || txtQuantity.getText().trim().length() == 0 || dpDate.getValue().toString().trim().length() == 0)
+        if(  txtQuantity.getText().trim().length() == 0 || dpDate.getValue().toString().trim().length() == 0)
         {
             CommonUtils.showWarningDialog();
         } 
         else if( comboBoxStatus.getSelectionModel().getSelectedItem() == null || 
-          comboBoxSsn.getSelectionModel().getSelectedItem() == null || comboBoxPhySsn.getSelectionModel().getSelectedItem() == null   ||comboBoxTradeName.getSelectionModel().getSelectedItem() == null  || 
-                comboDropHour.getSelectionModel().getSelectedItem() == null || 
-          comboDropMin.getSelectionModel().getSelectedItem() == null || comboPickHour.getSelectionModel().getSelectedItem() == null   ||comboPickMin.getSelectionModel().getSelectedItem() == null)
+          comboBoxSsn.getSelectionModel().getSelectedItem() == null || 
+                comboBoxPhySsn.getSelectionModel().getSelectedItem() == null   ||comboBoxTradeName.getSelectionModel().getSelectedItem() == null  )
         {
              CommonUtils.showNotSelectedWarningDialog();
         }
         else
         {
-            String  status = comboBoxStatus.getSelectionModel().getSelectedItem().toString().trim();
+            String dropoff_date="2100-12-31";
+            if(dpDropOff.getValue()!= null && dpDropOff.getValue().toString().trim().length()>0)
+                dropoff_date=dpDropOff.getValue().toString().trim();
+            String pickup_date="2100-12-31";
+            if(dpPickUp.getValue()!= null && dpPickUp.getValue().toString().trim().length()>0)
+                pickup_date=dpPickUp.getValue().toString().trim();
+            String drop_off_hour="00";
+            if(comboDropHour.getSelectionModel().getSelectedItem()!= null && comboDropHour.getSelectionModel().getSelectedItem().toString().trim().length()>0)
+                drop_off_hour=comboDropHour.getSelectionModel().getSelectedItem().toString();
+            String pick_up_hour="00";
+            if(comboPickHour.getSelectionModel().getSelectedItem()!= null && comboPickHour.getSelectionModel().getSelectedItem().toString().trim().length()>0)
+                pick_up_hour=comboPickHour.getSelectionModel().getSelectedItem().toString();
             
+            String drop_off_min="00";
+            if(comboDropMin.getSelectionModel().getSelectedItem()!= null && comboDropMin.getSelectionModel().getSelectedItem().toString().trim().length()>0)
+                drop_off_hour=comboDropMin.getSelectionModel().getSelectedItem().toString();
+            String pick_up_min="00";
+            if(comboPickMin.getSelectionModel().getSelectedItem()!= null && comboPickMin.getSelectionModel().getSelectedItem().toString().trim().length()>0)
+                pick_up_hour=comboPickMin.getSelectionModel().getSelectedItem().toString();
+            String  status = comboBoxStatus.getSelectionModel().getSelectedItem().toString().trim();
             String ssn = comboBoxSsn.getSelectionModel().getSelectedItem().toString().trim().split(":")[0].trim();
             String phy_ssn=  comboBoxPhySsn.getSelectionModel().getSelectedItem().toString().trim().split(":")[0].trim();
             String pre_date = dpDate.getValue().toString();
             String quantity = txtQuantity.getText().toString().trim();
-            String drop_off_time = dpDropOff.getValue().toString()+" "+ comboDropHour.getSelectionModel().getSelectedItem().toString().trim()+":"+
-                    comboDropMin.getSelectionModel().getSelectedItem().toString().trim()+":00.00000";
-            String pick_up_time = dpPickUp.getValue().toString()+" "+ comboPickHour.getSelectionModel().getSelectedItem().toString().trim()+":"+
-                    comboPickMin.getSelectionModel().getSelectedItem().toString().trim()+":00.00000";
+            String drop_off_time = dropoff_date+" "+ drop_off_hour+":"+
+                    drop_off_min+":00.00000";
+            String pick_up_time = pickup_date+" "+ pick_up_hour+":"+
+                  pick_up_min+":00.00000";
             String trade_name = comboBoxTradeName.getSelectionModel().getSelectedItem().toString().trim().split(":")[0].trim();
             String  pharm_co_name =  comboBoxTradeName.getSelectionModel().getSelectedItem().toString().trim().split(":")[1].trim();
 

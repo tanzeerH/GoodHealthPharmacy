@@ -15,6 +15,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -28,6 +29,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TablePosition;
@@ -57,9 +59,16 @@ public class FXMLSellManagementController implements Initializable {
     TextField txtExp;
     @FXML
     Button btnAdd;
+    @FXML
+    ComboBox comboPharmacy;
+    @FXML
+    Button btnShowAll;
     
     @FXML
     Button btnSell;
+    
+    @FXML
+    Button btnPatient;
     
     @FXML
     Button btnDocManage;
@@ -72,24 +81,37 @@ public class FXMLSellManagementController implements Initializable {
     
     @FXML
     Button btnDrug;
+    
+    @FXML
+    Button btnContract;
+    
+    @FXML
+    Button btnPrescription;
+
 
 
     @FXML
     TableView tableSell;
 
     private  ObservableList<Sell> data;
+     private  ObservableList<String> pharmacyList;
+    
+     private int CURRENT_SELECTION = 1;
+    private int FLAG_SHOW_ALL = 1;
+    private int FLAG_SHOW_SELECTIVE = 2;
+    private String curPharmacyId="";
 
-    @FXML
+   @FXML
     private void handleButtonAction(ActionEvent event) {
        System.out.println(event.getSource()+"  patient clicked");
         Stage stage;
         Parent root;
-        stage = (Stage) btnSell.getScene().getWindow();
+        stage = (Stage) btnPatient.getScene().getWindow();
         //load up OTHER FXML document
         try {
-             root = FXMLLoader.load(getClass().getResource("FXMLDoctorManagement.fxml"));
+             root = FXMLLoader.load(getClass().getResource("FXMLPatientManagement.fxml"));
              Scene scene = new Scene(root,Constants.WINDOW_WIDTH,Constants.WINDOW_HEIGHT);
-
+            stage.setTitle("Patient Management");
             stage.setScene(scene);
             stage.show();
         } catch (IOException e) {
@@ -102,12 +124,12 @@ public class FXMLSellManagementController implements Initializable {
      System.out.println(event.getSource()+"  doctor clicked");
         Stage stage;
         Parent root;
-        stage = (Stage) btnSell.getScene().getWindow();
+        stage = (Stage) btnPatient.getScene().getWindow();
         //load up OTHER FXML document
         try {
              root = FXMLLoader.load(getClass().getResource("FXMLDoctorManagement.fxml"));
              Scene scene = new Scene(root,Constants.WINDOW_WIDTH,Constants.WINDOW_HEIGHT);
-             
+            stage.setTitle("Doctor Management");
             stage.setScene(scene);
             stage.show();
         } catch (IOException e) {
@@ -120,7 +142,7 @@ public class FXMLSellManagementController implements Initializable {
      System.out.println(event.getSource()+"  doctor clicked");
         Stage stage;
         Parent root;
-        stage = (Stage) btnSell.getScene().getWindow();
+        stage = (Stage) btnPatient.getScene().getWindow();
         //load up OTHER FXML document
         try {
              root = FXMLLoader.load(getClass().getResource("FXMLPharmacyManagement.fxml"));
@@ -169,6 +191,42 @@ public class FXMLSellManagementController implements Initializable {
             e.printStackTrace();
         }
     }
+      @FXML
+    private void onContractManage(ActionEvent event) {
+     System.out.println(event.getSource()+"  contract clicked");
+        Stage stage;
+        Parent root;
+        stage = (Stage) btnCompany.getScene().getWindow();
+        //load up OTHER FXML document
+        try {
+             root = FXMLLoader.load(getClass().getResource("FXMLContractManagement.fxml"));
+             Scene scene = new Scene(root,Constants.WINDOW_WIDTH,Constants.WINDOW_HEIGHT);
+
+            stage.setTitle("Contract Management");
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+      @FXML
+    private void onPrescriptionManage(ActionEvent event) {
+     System.out.println(event.getSource()+"  contract clicked");
+        Stage stage;
+        Parent root;
+        stage = (Stage) btnCompany.getScene().getWindow();
+        //load up OTHER FXML document
+        try {
+             root = FXMLLoader.load(getClass().getResource("FXMLPrescriptionManagement.fxml"));
+             Scene scene = new Scene(root,Constants.WINDOW_WIDTH,Constants.WINDOW_HEIGHT);
+
+            stage.setTitle("Prescription Management");
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     @FXML
     private void handleAddButton(ActionEvent event) {
         System.out.println(event.getSource() + "  add clicked");
@@ -197,6 +255,14 @@ public class FXMLSellManagementController implements Initializable {
         }
     }
     
+     @FXML
+    private void onAllShow(ActionEvent event) {
+      System.out.println(event.getSource() + "  on all show clicked");
+      CURRENT_SELECTION = FLAG_SHOW_ALL;
+      initSellTable();
+
+    }
+    
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         
@@ -204,8 +270,36 @@ public class FXMLSellManagementController implements Initializable {
     }
     private void loadData()
     {
-        ArrayList<Sell> patientList= DataHelper.getSellList();
+        ArrayList<Sell> patientList=null;
+        if( CURRENT_SELECTION == FLAG_SHOW_ALL)    
+        {
+            patientList= DataHelper.getSellList();
+        
+        }
+        else
+        {
+             patientList= DataHelper.getSellListOfOtherPharmacy(curPharmacyId);
+        }
         data= FXCollections.observableArrayList(patientList);
+        pharmacyList=FXCollections.observableArrayList(DataHelper.getPharmacyIDList());
+        if(comboPharmacy!= null)
+            comboPharmacy.getItems().clear();
+        comboPharmacy.getItems().addAll(pharmacyList);
+
+        comboPharmacy.valueProperty().addListener(new ChangeListener<String>() {
+        @Override 
+        public void changed(ObservableValue ov, String t, String t1) {
+            if(t1!= null && t1.contains(":"))
+            {
+             System.out.println("calling"+t1);
+            String pid= t1.split(":")[0].trim();
+            System.out.println(pid);
+            curPharmacyId=pid;
+            CURRENT_SELECTION = FLAG_SHOW_SELECTIVE;
+            initSellTable();
+            }
+        }    
+        });
     }
 
     private void initSellTable() {

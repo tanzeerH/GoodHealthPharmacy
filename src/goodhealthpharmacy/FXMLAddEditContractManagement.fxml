@@ -23,7 +23,7 @@
                   <Insets bottom="10.0" left="10.0" right="10.0" top="5.0" />
                </HBox.margin>
             </Button>
-            <Button maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="50.0" prefWidth="90.0" text="Prescription &#10;Management">
+            <Button fx:id="btnPrescription" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onPrescriptionManage" prefHeight="50.0" prefWidth="90.0" text="Prescription &#10;Management">
                <HBox.margin>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </HBox.margin>
@@ -33,7 +33,7 @@
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </HBox.margin>
             </Button>
-            <Button minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="50.0" prefWidth="90.0" text="Contract &#10;Management">
+            <Button fx:id="btnContract" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onContractManage" prefHeight="50.0" prefWidth="90.0" text="Contract &#10;Management">
                <HBox.margin>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </HBox.margin>

@@ -12,6 +12,8 @@ import goodhealthpharmacy.utils.CommonUtils;
 import goodhealthpharmacy.utils.Constants;
 import java.io.IOException;
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 import javafx.beans.value.ChangeListener;
@@ -29,6 +31,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TablePosition;
@@ -40,6 +43,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 import javax.swing.JOptionPane;
 
 /**
@@ -55,7 +59,7 @@ public class FXMLPatientManagementController implements Initializable {
     @FXML
     TextField txtAddress;
     @FXML
-    TextField txtAge;
+    DatePicker dpBirthDate;
     @FXML
     ComboBox comboBoxPryPhi;
     @FXML
@@ -98,9 +102,9 @@ public class FXMLPatientManagementController implements Initializable {
         stage = (Stage) btnPatient.getScene().getWindow();
         //load up OTHER FXML document
         try {
-             root = FXMLLoader.load(getClass().getResource("FXMLDoctorManagement.fxml"));
+             root = FXMLLoader.load(getClass().getResource("FXMLPatientManagement.fxml"));
              Scene scene = new Scene(root,Constants.WINDOW_WIDTH,Constants.WINDOW_HEIGHT);
-
+            stage.setTitle("Patient Management");
             stage.setScene(scene);
             stage.show();
         } catch (IOException e) {
@@ -118,7 +122,7 @@ public class FXMLPatientManagementController implements Initializable {
         try {
              root = FXMLLoader.load(getClass().getResource("FXMLDoctorManagement.fxml"));
              Scene scene = new Scene(root,Constants.WINDOW_WIDTH,Constants.WINDOW_HEIGHT);
-             
+            stage.setTitle("Doctor Management");
             stage.setScene(scene);
             stage.show();
         } catch (IOException e) {
@@ -220,7 +224,7 @@ public class FXMLPatientManagementController implements Initializable {
     private void handleAddButton(ActionEvent event) {
         System.out.println(event.getSource() + "  add clicked");
         if(txtSsn.getText().trim().length() == 0 || txtName.getText().trim().length() == 0 ||
-                txtAddress.getText().trim().length() == 0 || txtAge.getText().trim().length() == 0 || txtAge.getText().trim().length() == 0)
+                txtAddress.getText().trim().length() == 0  || dpBirthDate.getValue().toString().trim().length() == 0)
         {
             CommonUtils.showWarningDialog();
         }
@@ -228,24 +232,18 @@ public class FXMLPatientManagementController implements Initializable {
         {
              CommonUtils.showNotSelectedWarningDialog();
         }
-        else if( !CommonUtils.isNumber(txtAge.getText()))
-        {
-             JOptionPane.showMessageDialog(null, "Please insert a valid value for age. ");
-        }else if( Integer.parseInt(txtAge.getText())>150 || Integer.parseInt(txtAge.getText())<15)
-        {
-             JOptionPane.showMessageDialog(null, "Please insert a valid value for age. ");
-        }
         else
         {
            String phy_ssn = comboBoxPryPhi.getSelectionModel().getSelectedItem().toString().trim().split(":")[0].trim();
-           boolean res= DataHelper.insertPatient(txtSsn.getText(), txtName.getText(), txtAddress.getText(), txtAge.getText(),phy_ssn);
+           boolean res= DataHelper.insertPatient(txtSsn.getText(), txtName.getText(), txtAddress.getText(),dpBirthDate.getValue().toString().trim(),phy_ssn);
            if(res)
            {
                 JOptionPane.showMessageDialog(null, "Successfully Inserted.");
                 txtSsn.setText("");
                 txtName.setText("");
                 txtAddress.setText("");
-                txtAge.setText("");
+               // dpBirthDate.setValue("Bir");
+               // txtAge.setText("");
                 comboBoxPryPhi.getSelectionModel().clearSelection();
                 initPatientTable();
            }
@@ -256,10 +254,38 @@ public class FXMLPatientManagementController implements Initializable {
            }
         }
     }
-    
+     private void setDatePickerBirthDate()
+   {
+       String pattern = "yyyy/MM/dd";
+
+        dpBirthDate.setPromptText(pattern.toLowerCase());
+
+        dpBirthDate.setConverter(new StringConverter<LocalDate>() {
+             DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(pattern);
+
+             @Override 
+             public String toString(LocalDate date) {
+                 if (date != null) {
+                     return dateFormatter.format(date);
+                 } else {
+                     return "";
+                 }
+             }
+
+             @Override 
+             public LocalDate fromString(String string) {
+                 if (string != null && !string.isEmpty()) {
+                     return LocalDate.parse(string, dateFormatter);
+                 } else {
+                     return null;
+                 }
+             }
+         });
+   }
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         
+        setDatePickerBirthDate();
         initPatientTable();
     }
     private void loadData()

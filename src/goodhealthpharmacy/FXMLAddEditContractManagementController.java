@@ -75,7 +75,7 @@ public class FXMLAddEditContractManagementController implements Initializable {
     Button btnAdd;
     
     @FXML
-    Button btnContract;
+    Button btnPatient;
     
     @FXML
     Button btnDocManage;
@@ -88,6 +88,12 @@ public class FXMLAddEditContractManagementController implements Initializable {
     
     @FXML
     Button btnDrug;
+    
+    @FXML
+    Button btnContract;
+    
+    @FXML
+    Button btnPrescription;
 
 
     @FXML
@@ -99,17 +105,17 @@ public class FXMLAddEditContractManagementController implements Initializable {
 
 
 
-    @FXML
+   @FXML
     private void handleButtonAction(ActionEvent event) {
        System.out.println(event.getSource()+"  patient clicked");
         Stage stage;
         Parent root;
-        stage = (Stage) btnContract.getScene().getWindow();
+        stage = (Stage) btnPatient.getScene().getWindow();
         //load up OTHER FXML document
         try {
-             root = FXMLLoader.load(getClass().getResource("FXMLDoctorManagement.fxml"));
+             root = FXMLLoader.load(getClass().getResource("FXMLPatientManagement.fxml"));
              Scene scene = new Scene(root,Constants.WINDOW_WIDTH,Constants.WINDOW_HEIGHT);
-
+            stage.setTitle("Patient Management");
             stage.setScene(scene);
             stage.show();
         } catch (IOException e) {
@@ -122,12 +128,12 @@ public class FXMLAddEditContractManagementController implements Initializable {
      System.out.println(event.getSource()+"  doctor clicked");
         Stage stage;
         Parent root;
-        stage = (Stage) btnContract.getScene().getWindow();
+        stage = (Stage) btnPatient.getScene().getWindow();
         //load up OTHER FXML document
         try {
              root = FXMLLoader.load(getClass().getResource("FXMLDoctorManagement.fxml"));
              Scene scene = new Scene(root,Constants.WINDOW_WIDTH,Constants.WINDOW_HEIGHT);
-             
+            stage.setTitle("Doctor Management");
             stage.setScene(scene);
             stage.show();
         } catch (IOException e) {
@@ -140,7 +146,7 @@ public class FXMLAddEditContractManagementController implements Initializable {
      System.out.println(event.getSource()+"  doctor clicked");
         Stage stage;
         Parent root;
-        stage = (Stage) btnContract.getScene().getWindow();
+        stage = (Stage) btnPatient.getScene().getWindow();
         //load up OTHER FXML document
         try {
              root = FXMLLoader.load(getClass().getResource("FXMLPharmacyManagement.fxml"));
@@ -183,6 +189,42 @@ public class FXMLAddEditContractManagementController implements Initializable {
              Scene scene = new Scene(root,Constants.WINDOW_WIDTH,Constants.WINDOW_HEIGHT);
 
             stage.setTitle("Company Management");
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+      @FXML
+    private void onContractManage(ActionEvent event) {
+     System.out.println(event.getSource()+"  contract clicked");
+        Stage stage;
+        Parent root;
+        stage = (Stage) btnCompany.getScene().getWindow();
+        //load up OTHER FXML document
+        try {
+             root = FXMLLoader.load(getClass().getResource("FXMLContractManagement.fxml"));
+             Scene scene = new Scene(root,Constants.WINDOW_WIDTH,Constants.WINDOW_HEIGHT);
+
+            stage.setTitle("Contract Management");
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+      @FXML
+    private void onPrescriptionManage(ActionEvent event) {
+     System.out.println(event.getSource()+"  contract clicked");
+        Stage stage;
+        Parent root;
+        stage = (Stage) btnCompany.getScene().getWindow();
+        //load up OTHER FXML document
+        try {
+             root = FXMLLoader.load(getClass().getResource("FXMLPrescriptionManagement.fxml"));
+             Scene scene = new Scene(root,Constants.WINDOW_WIDTH,Constants.WINDOW_HEIGHT);
+
+            stage.setTitle("Prescription Management");
             stage.setScene(scene);
             stage.show();
         } catch (IOException e) {
@@ -317,7 +359,7 @@ public class FXMLAddEditContractManagementController implements Initializable {
         data= FXCollections.observableArrayList(patientList);
         companyList = FXCollections.observableArrayList(DataHelper.getCompanyIDList());
         pharmacyList = FXCollections.observableArrayList(DataHelper.getPharmacyIDList());
-       // comboBoxPharmcy.getItems().addAll(pharmacyList);
+        comboBoxPharmcy.getItems().addAll(pharmacyList);
         comboBoxCompany.getItems().addAll(companyList);
         
 

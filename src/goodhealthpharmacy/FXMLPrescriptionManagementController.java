@@ -16,9 +16,15 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.ResourceBundle;
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -32,6 +38,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TablePosition;
@@ -44,6 +52,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
@@ -67,9 +76,23 @@ public class FXMLPrescriptionManagementController implements Initializable {
     TextField txtExp;
     @FXML
     Button btnAdd;
-    
     @FXML
-    Button btnPrescription;
+    Button btnShowAll;
+    @FXML
+    ComboBox comboPatient;
+    @FXML
+    ComboBox comboxByStatus;
+    @FXML
+    DatePicker dpBdate;
+    @FXML
+    Button btnSearch;
+    @FXML
+    TextField pName;
+    
+    
+      
+    @FXML
+    Button btnPatient;
     
     @FXML
     Button btnDocManage;
@@ -82,24 +105,46 @@ public class FXMLPrescriptionManagementController implements Initializable {
     
     @FXML
     Button btnDrug;
-
+    
+    @FXML
+    Button btnContract;
+    
+    @FXML
+    Button btnPrescription;
 
     @FXML
     TableView tablePrescription;
 
     private  ObservableList<Prescription> data;
+    private  ObservableList<String> ssnList;
+    private  ObservableList<String> statusList;
+    private ArrayList<String> mStatusList= new ArrayList<>();
 
-    @FXML
+
+    
+     private int CURRENT_SELECTION = 1;
+    private int FLAG_SHOW_ALL = 1;
+     private int FLAG_SHOW_BY_STATUS_PENDING = 3;
+      private int FLAG_SHOW_BY_STATUS_COMPLETED_TODAY = 4;
+     private int FLAG_SHOW_BY_PATIENT = 10;
+    private int FLAG_SHOW_BY_SEARCH = 11;
+
+    private int FLAG_SHOW_SELECTIVE = 2;
+    private String currentPatient="";
+    private String currentName="";
+    private String currentBdate="";
+
+     @FXML
     private void handleButtonAction(ActionEvent event) {
        System.out.println(event.getSource()+"  patient clicked");
         Stage stage;
         Parent root;
-        stage = (Stage) btnPrescription.getScene().getWindow();
+        stage = (Stage) btnPatient.getScene().getWindow();
         //load up OTHER FXML document
         try {
-             root = FXMLLoader.load(getClass().getResource("FXMLDoctorManagement.fxml"));
+             root = FXMLLoader.load(getClass().getResource("FXMLPatientManagement.fxml"));
              Scene scene = new Scene(root,Constants.WINDOW_WIDTH,Constants.WINDOW_HEIGHT);
-
+            stage.setTitle("Patient Management");
             stage.setScene(scene);
             stage.show();
         } catch (IOException e) {
@@ -112,12 +157,12 @@ public class FXMLPrescriptionManagementController implements Initializable {
      System.out.println(event.getSource()+"  doctor clicked");
         Stage stage;
         Parent root;
-        stage = (Stage) btnPrescription.getScene().getWindow();
+        stage = (Stage) btnPatient.getScene().getWindow();
         //load up OTHER FXML document
         try {
              root = FXMLLoader.load(getClass().getResource("FXMLDoctorManagement.fxml"));
              Scene scene = new Scene(root,Constants.WINDOW_WIDTH,Constants.WINDOW_HEIGHT);
-             
+            stage.setTitle("Doctor Management");
             stage.setScene(scene);
             stage.show();
         } catch (IOException e) {
@@ -130,7 +175,7 @@ public class FXMLPrescriptionManagementController implements Initializable {
      System.out.println(event.getSource()+"  doctor clicked");
         Stage stage;
         Parent root;
-        stage = (Stage) btnPrescription.getScene().getWindow();
+        stage = (Stage) btnPatient.getScene().getWindow();
         //load up OTHER FXML document
         try {
              root = FXMLLoader.load(getClass().getResource("FXMLPharmacyManagement.fxml"));
@@ -179,6 +224,42 @@ public class FXMLPrescriptionManagementController implements Initializable {
             e.printStackTrace();
         }
     }
+      @FXML
+    private void onContractManage(ActionEvent event) {
+     System.out.println(event.getSource()+"  contract clicked");
+        Stage stage;
+        Parent root;
+        stage = (Stage) btnCompany.getScene().getWindow();
+        //load up OTHER FXML document
+        try {
+             root = FXMLLoader.load(getClass().getResource("FXMLContractManagement.fxml"));
+             Scene scene = new Scene(root,Constants.WINDOW_WIDTH,Constants.WINDOW_HEIGHT);
+
+            stage.setTitle("Contract Management");
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+      @FXML
+    private void onPrescriptionManage(ActionEvent event) {
+     System.out.println(event.getSource()+"  contract clicked");
+        Stage stage;
+        Parent root;
+        stage = (Stage) btnCompany.getScene().getWindow();
+        //load up OTHER FXML document
+        try {
+             root = FXMLLoader.load(getClass().getResource("FXMLPrescriptionManagement.fxml"));
+             Scene scene = new Scene(root,Constants.WINDOW_WIDTH,Constants.WINDOW_HEIGHT);
+
+            stage.setTitle("Prescription Management");
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     @FXML
     private void handleAddButton(ActionEvent event) {
         System.out.println(event.getSource() + "  add clicked");
@@ -199,6 +280,51 @@ public class FXMLPrescriptionManagementController implements Initializable {
       
         
     }
+    @FXML
+    private void onShowAllClicked(ActionEvent event) {
+        System.out.println(event.getSource() + "  show all clicked");
+        CURRENT_SELECTION = FLAG_SHOW_ALL;
+        initPrescriptionTable();
+      
+        
+    }
+     @FXML
+    private void onSearchClicked(ActionEvent event) {
+        System.out.println(event.getSource() + " on search clicked");
+        CURRENT_SELECTION = FLAG_SHOW_BY_SEARCH;
+       
+        initPrescriptionTable();
+      
+        
+    }
+     private void setDateBdatePicker()
+   {
+       String pattern = "yyyy-MM-dd";
+
+        dpBdate.setPromptText(pattern.toLowerCase());
+
+        dpBdate.setConverter(new StringConverter<LocalDate>() {
+             DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(pattern);
+
+             @Override 
+             public String toString(LocalDate date) {
+                 if (date != null) {
+                     return dateFormatter.format(date);
+                 } else {
+                     return "";
+                 }
+             }
+
+             @Override 
+             public LocalDate fromString(String string) {
+                 if (string != null && !string.isEmpty()) {
+                     return LocalDate.parse(string, dateFormatter);
+                 } else {
+                     return null;
+                 }
+             }
+         });
+   }
     @FXML
     private void onPrescriptionEditClicked(Prescription contract) {
         System.out.println( "contract edit clicked");
@@ -224,15 +350,96 @@ public class FXMLPrescriptionManagementController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         
+        
         initPrescriptionTable();
     }
     private void loadData()
     {
-        ArrayList<Prescription> patientList= DataHelper.getPrescriptionList();
+        ArrayList<Prescription> patientList=null;
+        if(CURRENT_SELECTION == FLAG_SHOW_ALL)   
+        {
+            patientList=DataHelper.getPrescriptionList();
+       
+        }
+        else if( CURRENT_SELECTION == FLAG_SHOW_BY_PATIENT){
+            patientList=DataHelper.getPrescriptionListByPatient(currentPatient);
+        }
+        else if(CURRENT_SELECTION == FLAG_SHOW_BY_SEARCH)
+        {
+            currentBdate="";
+            if(dpBdate.getValue()!= null)
+                currentBdate=dpBdate.getValue().toString();
+           
+            currentName = pName.getText().toString();
+             patientList=DataHelper.getPrescriptionListByPatientNameAndBirthDate(currentName,currentBdate);
+        }
+         else if(CURRENT_SELECTION == FLAG_SHOW_BY_STATUS_PENDING)
+        {
+           
+             patientList=DataHelper.getPrescriptionListByPendingStatus();
+        }
+         else if(CURRENT_SELECTION == FLAG_SHOW_BY_STATUS_COMPLETED_TODAY)
+        {
+           
+             patientList=DataHelper.getPrescriptionListByCompletedStatus(getTodaysDate());
+        }
+        
+            
         data= FXCollections.observableArrayList(patientList);
+        comboPatient.getItems().clear();
+         ssnList = FXCollections.observableArrayList(DataHelper.getPatientSSNList());
+         comboPatient.getItems().addAll(ssnList);
+         comboPatient.valueProperty().addListener(new ChangeListener<String>() {
+        @Override 
+        public void changed(ObservableValue ov, String t, String t1) {
+          
+            String ssn= comboPatient.getValue().toString().split(":")[0].trim();
+            System.out.println(ssn);
+            currentPatient=ssn;
+            CURRENT_SELECTION = FLAG_SHOW_BY_PATIENT;
+            initPrescriptionTable();
+        }    
+        });
+      
+        mStatusList.clear();
+        mStatusList.add("Pending");
+        mStatusList.add("Completed Today");
+        mStatusList.add("Ready To Go");
+        
+        statusList = FXCollections.observableArrayList(mStatusList);
+        if(comboxByStatus != null)
+            comboxByStatus.getItems().clear();
+        comboxByStatus.getItems().addAll(statusList);
+        
+        comboxByStatus.valueProperty().addListener(new ChangeListener<String>() {
+        @Override 
+        public void changed(ObservableValue ov, String t, String t1) {
+          
+            String status= comboxByStatus.getValue().toString();
+            if(status.equals("Pending"))
+            {
+                CURRENT_SELECTION =FLAG_SHOW_BY_STATUS_PENDING;
+            }
+            else  if(status.equals("Completed Today"))
+            {
+                CURRENT_SELECTION =FLAG_SHOW_BY_STATUS_COMPLETED_TODAY;
+            }
+            System.out.println(status);
+            initPrescriptionTable();
+        }    
+        });
     }
 
+    private String getTodaysDate()
+    {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = new Date();
+        String d=dateFormat.format(date);
+        System.out.println(d);
+        return d;
+    }
     private void initPrescriptionTable() {
+        setDateBdatePicker();
         loadData();
         int column_maxWidth = Constants.TABLE_WIDTH / 6;
         tablePrescription.setEditable(true);

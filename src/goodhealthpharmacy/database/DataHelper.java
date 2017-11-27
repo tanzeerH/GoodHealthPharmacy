@@ -76,7 +76,7 @@ public class DataHelper {
             ResultSet rs = stmt.executeQuery("select * from Pri_Phy_Patient");
             while (rs.next()) {
                 //Doctor doctor=new Doctor(rs.getString("ssn"), rs.getString("name"), rs.getString("specialty"), rs.getString("yearsOfExperience"));
-                Patient patient=new Patient(rs.getString("ssn"), rs.getString("name"), rs.getString("age"), rs.getString("address"), rs.getString("phy_ssn"));
+                Patient patient=new Patient(rs.getString("ssn"), rs.getString("name"), rs.getString("birth_date"), rs.getString("address"), rs.getString("phy_ssn"));
                 patientList.add(patient);
             }
         } catch (SQLException e) {
@@ -85,14 +85,33 @@ public class DataHelper {
         return patientList;
 
     }
-     public static boolean insertPatient(String ssn, String name, String address, String age, String pry_phy)
+     public static ArrayList<Patient> getPatientListByNameAndBirthdate(String name, String birthdate) {
+        ArrayList<Patient> patientList=new ArrayList<>();
+        try {
+            Connection connection = Connector.getInstance();
+            Statement stmt = connection.createStatement();
+            String sql="select * from Pri_Phy_Patient where name = '"+ name+"' and birth_date = TO_DATE('"+birthdate+"', 'yyyy-mm-dd')";
+            System.out.println(sql);
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+                //Doctor doctor=new Doctor(rs.getString("ssn"), rs.getString("name"), rs.getString("specialty"), rs.getString("yearsOfExperience"));
+                Patient patient=new Patient(rs.getString("ssn"), rs.getString("name"), rs.getString("birth_date"), rs.getString("address"), rs.getString("phy_ssn"));
+                patientList.add(patient);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return patientList;
+
+    }
+     public static boolean insertPatient(String ssn, String name, String address, String date, String pry_phy)
     {
         
         try {
             Connection connection = Connector.getInstance();
             Statement stmt = connection.createStatement();
 
-            String exeqSql="insert into Pri_Phy_Patient values ( '"+ ssn +"', '"+ name +"', '"+ age+"', '"+ address +"', '"+pry_phy+"')";
+            String exeqSql="insert into Pri_Phy_Patient values ( '"+ ssn +"', '"+ name +"', TO_DATE('"+date+"', 'yyyy/mm/dd'), '"+ address +"', '"+pry_phy+"')";
             System.out.println(exeqSql);
             boolean res= stmt.execute(exeqSql);
             System.out.println("res: "+ res);
@@ -159,6 +178,23 @@ public class DataHelper {
         return companyList;
 
     }
+       public static ArrayList<Company> getMostExpensiveCompanyList() {
+        ArrayList<Company> companyList=new ArrayList<>();
+        try {
+            Connection connection = Connector.getInstance();
+            Statement stmt = connection.createStatement();
+
+            ResultSet rs = stmt.executeQuery("select unique(PHARM_CO.NAME),PHARM_CO.PHONE from Pharm_co,Sell Where Pharm_co.name= Sell.pharm_co_name and Sell.price= (select max(price) from Sell)");
+            while (rs.next()) {
+                Company company=new Company(rs.getString("name"), rs.getString("phone"));
+                companyList.add(company);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return companyList;
+
+    }
        public static ArrayList<String> getCompanyIDList() {
         ArrayList<String> companyList=new ArrayList<>();
         try {
@@ -196,6 +232,25 @@ public class DataHelper {
         return drugList;
 
     }
+       public static ArrayList<Drug> getDrugsSoldByAllPharmacyList() {
+        ArrayList<Drug> drugList=new ArrayList<>();
+        try {
+            Connection connection = Connector.getInstance();
+            Statement stmt = connection.createStatement();
+
+            ResultSet rs = stmt.executeQuery("Select Make_Drug.TRADE_NAME,MAKE_DRUG.PHARM_CO_NAME,MAKE_DRUG.FORMULA from Make_Drug, (select trade_name,pharm_co_name from Sell group by trade_name,pharm_co_name " +
+            "having count(pharm_id) = (select count(*)  from Pharmacy)) A where Make_drug.trade_name = A.trade_name and " +
+            "Make_Drug.pharm_co_name=A.pharm_co_name");
+            while (rs.next()) {
+                Drug drug=new Drug(rs.getString("trade_name"), rs.getString("pharm_co_name"),rs.getString("formula"));
+                drugList.add(drug);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return drugList;
+
+    }
        public static ArrayList<Sell> getSellList() {
         ArrayList<Sell> sellList=new ArrayList<>();
         try {
@@ -203,6 +258,25 @@ public class DataHelper {
             Statement stmt = connection.createStatement();
 
             ResultSet rs = stmt.executeQuery("select * from Sell");
+            while (rs.next()) {
+                Sell sell=new Sell(rs.getString("trade_name"), rs.getString("pharm_co_name"),rs.getString("pharm_id"), rs.getString("price"));
+                sellList.add(sell);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return sellList;
+
+    }
+       public static ArrayList<Sell> getSellListOfOtherPharmacy(String pharmacy_id) {
+        ArrayList<Sell> sellList=new ArrayList<>();
+        try {
+            Connection connection = Connector.getInstance();
+            Statement stmt = connection.createStatement();
+
+            ResultSet rs = stmt.executeQuery("Select Sell.price,Sell.pharm_id,Sell.trade_name, Sell.pharm_co_name, Pharmacy.phone from Sell, PHARMACY  where Sell.PHARM_ID <> '"+pharmacy_id+"' and Sell.TRADE_NAME IN " +
+        "( Select TRADE_NAME from  SELL where SELL.PHARM_ID='"+pharmacy_id+"') and Sell.PHARM_CO_NAME IN " +
+        "( Select PHARM_CO_NAME from  SELL where SELL.PHARM_ID='"+pharmacy_id+"') and SEll.PHARM_ID=PHARMACY.PHARM_ID");
             while (rs.next()) {
                 Sell sell=new Sell(rs.getString("trade_name"), rs.getString("pharm_co_name"),rs.getString("pharm_id"), rs.getString("price"));
                 sellList.add(sell);
@@ -289,6 +363,85 @@ public class DataHelper {
                 Prescription prescription=new Prescription(rs.getString("pre_id"), rs.getString("status"),rs.getString("drop_off_time"), rs.getString("pick_up_time"),rs.getString("ssn"),
                         rs.getString("phy_ssn"),rs.getString("pre_date"),rs.getString("quantity"), rs.getString("trade_name"),rs.getString("pharm_co_name"));
                 prescriptionList.add(prescription);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return prescriptionList;
+
+    }
+        public static ArrayList<Prescription> getPrescriptionListByPatient(String ssn) {
+        ArrayList<Prescription> prescriptionList=new ArrayList<>();
+        try {
+            Connection connection = Connector.getInstance();
+            Statement stmt = connection.createStatement();
+
+            ResultSet rs = stmt.executeQuery("select * from Prescription where ssn='"+ssn+"'");
+            while (rs.next()) {
+                Prescription prescription=new Prescription(rs.getString("pre_id"), rs.getString("status"),rs.getString("drop_off_time"), rs.getString("pick_up_time"),rs.getString("ssn"),
+                        rs.getString("phy_ssn"),rs.getString("pre_date"),rs.getString("quantity"), rs.getString("trade_name"),rs.getString("pharm_co_name"));
+                prescriptionList.add(prescription);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return prescriptionList;
+
+    }
+        public static ArrayList<Prescription> getPrescriptionListByPendingStatus() {
+        ArrayList<Prescription> prescriptionList=new ArrayList<>();
+        try {
+            Connection connection = Connector.getInstance();
+            Statement stmt = connection.createStatement();
+
+            ResultSet rs = stmt.executeQuery("select * from Prescription where status='pending'");
+            while (rs.next()) {
+                Prescription prescription=new Prescription(rs.getString("pre_id"), rs.getString("status"),rs.getString("drop_off_time"), rs.getString("pick_up_time"),rs.getString("ssn"),
+                        rs.getString("phy_ssn"),rs.getString("pre_date"),rs.getString("quantity"), rs.getString("trade_name"),rs.getString("pharm_co_name"));
+                prescriptionList.add(prescription);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return prescriptionList;
+
+    }
+         public static ArrayList<Prescription> getPrescriptionListByCompletedStatus(String date) {
+        ArrayList<Prescription> prescriptionList=new ArrayList<>();
+        try {
+            Connection connection = Connector.getInstance();
+            Statement stmt = connection.createStatement();
+
+            ResultSet rs = stmt.executeQuery("select * from Prescription where status='completed'");
+            while (rs.next()) {
+                if(rs.getString("drop_off_time").startsWith(date))
+                {
+                Prescription prescription=new Prescription(rs.getString("pre_id"), rs.getString("status"),rs.getString("drop_off_time"), rs.getString("pick_up_time"),rs.getString("ssn"),
+                        rs.getString("phy_ssn"),rs.getString("pre_date"),rs.getString("quantity"), rs.getString("trade_name"),rs.getString("pharm_co_name"));
+                prescriptionList.add(prescription);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return prescriptionList;
+
+    }
+         public static ArrayList<Prescription> getPrescriptionListByPatientNameAndBirthDate(String name, String bdate) {
+        ArrayList<Prescription> prescriptionList=new ArrayList<>();
+        try {
+            ArrayList<Patient> pList= getPatientListByNameAndBirthdate(name, bdate);
+            Connection connection = Connector.getInstance();
+            Statement stmt = connection.createStatement();
+
+            for (int i=0;i<pList.size();i++)
+            {
+                ResultSet rs = stmt.executeQuery("select * from Prescription where ssn='"+pList.get(i).getSsn()+"'");
+                while (rs.next()) {
+                    Prescription prescription=new Prescription(rs.getString("pre_id"), rs.getString("status"),rs.getString("drop_off_time"), rs.getString("pick_up_time"),rs.getString("ssn"),
+                            rs.getString("phy_ssn"),rs.getString("pre_date"),rs.getString("quantity"), rs.getString("trade_name"),rs.getString("pharm_co_name"));
+                    prescriptionList.add(prescription);
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
